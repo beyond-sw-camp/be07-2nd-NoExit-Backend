@@ -36,6 +36,7 @@ public class GameController {
 			@PageableDefault(size=16, sort = "createdTime", direction = Sort.Direction.DESC)
 			Pageable pageable) {
 		Page<GameResDto> games = gameService.gameList(pageable);
+		System.out.println("test");
 		return new ResponseEntity<>(new CommonResDto(HttpStatus.OK, "OK", games), HttpStatus.OK);
 	}
 
