@@ -22,6 +22,10 @@ public class ChatMessageEntity {
     private String sender;
     private String content;
     private Long timestamp;
+
+    private String senderName;
+    private String senderProfileImage;
+
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     @JsonBackReference

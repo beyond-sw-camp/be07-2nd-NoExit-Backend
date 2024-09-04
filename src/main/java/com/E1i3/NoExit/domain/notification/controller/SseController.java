@@ -36,7 +36,8 @@ public class SseController implements MessageListener {
 	private final NotificationRepository notificationRepository;
 	private Set<String> subscribeList = ConcurrentHashMap.newKeySet();
 
-	// private final Map<String, SseEmitter> ownerEmitters = new ConcurrentHashMap<>();
+	// private final Map<String, SseEmitter> ownerEmitters = new
+	// ConcurrentHashMap<>();
 	// private Set<String> subsbribeOwnerList = ConcurrentHashMap.newKeySet();
 
 	@Qualifier("3")
@@ -45,34 +46,24 @@ public class SseController implements MessageListener {
 	private final RedisMessageListenerContainer redisMessageListenerContainer;
 
 	public SseController(@Qualifier("3") RedisTemplate<String, Object> sseRedisTemplate,
-		RedisMessageListenerContainer redisMessageListenerContainer, NotificationRepository notificationRepository) {
+			RedisMessageListenerContainer redisMessageListenerContainer,
+			NotificationRepository notificationRepository) {
 		this.sseRedisTemplate = sseRedisTemplate;
 		this.redisMessageListenerContainer = redisMessageListenerContainer;
 		this.notificationRepository = notificationRepository;
 	}
 
-	public void subscribeChannel(String email){
-	// public void subscribeChannel(String email, Role role){
-		// if(role == Role.USER && !subscribeList.contains(email)){
+	public void subscribeChannel(String email) {
 		if (!subscribeList.contains(email)) {
 			MessageListenerAdapter listenerAdapter = createListerAdapter(this);
 			redisMessageListenerContainer.addMessageListener(listenerAdapter, new PatternTopic(email));
 			subscribeList.add(email);
 		}
-
-		// }else if(role == Role.OWNER && !subsbribeOwnerList.contains(email)){
-		// 	MessageListenerAdapter listenerAdapter = createListerAdapter(this);
-		// 	redisMessageListenerContainer.addMessageListener(listenerAdapter, new PatternTopic(email));
-		// 	subsbribeOwnerList.add(email);
-		}
+	}
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
-		System.out.println("연결 개수 : " + emitters.size());
-		System.out.println("이름 : " + emitters.toString());
 		try {
-			System.out.println("message : " + message);
-
 			ObjectMapper objectMapper = new ObjectMapper();
 			NotificationResDto dto = objectMapper.readValue(message.getBody(), NotificationResDto.class);
 			String email = new String(pattern, StandardCharsets.UTF_8);
@@ -86,9 +77,10 @@ public class SseController implements MessageListener {
 		}
 	}
 
-	private MessageListenerAdapter createListerAdapter(SseController sseController){
+	private MessageListenerAdapter createListerAdapter(SseController sseController) {
 		return new MessageListenerAdapter(sseController, "onMessage");
 	}
+
 	@GetMapping("/subscribe")
 	public SseEmitter subcribe() {
 		SseEmitter emitter = new SseEmitter(14400 * 60 * 1000L);
@@ -98,21 +90,13 @@ public class SseController implements MessageListener {
 		emitters.put(email, emitter);
 		emitter.onCompletion(() -> emitters.remove(email));
 		emitter.onTimeout(() -> emitters.remove(email));
-		// }
-		// List<NotificationResDto> notifications = notificationService.getNotificationsByEmail();
-		// try {
-		// 	for (NotificationResDto notification : notifications) {
-		// 		emitter.send(SseEmitter.event().name("notification").data(notification));
-		// 	}
-		// } catch (IOException e) {
-		// 	e.printStackTrace();
-		// }
+
 		subscribeChannel(email);
 		return emitter;
 	}
 
-	public void publishMessage(NotificationResDto dto, String email ) {
-		sseRedisTemplate.convertAndSend(email, dto);
+	public void publishMessage(NotificationResDto dto, String email) {
 		notificationRepository.save(dto);
+		sseRedisTemplate.convertAndSend(email, dto);
 	}
 }

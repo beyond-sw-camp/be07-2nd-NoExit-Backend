@@ -10,12 +10,14 @@ import com.E1i3.NoExit.domain.reservation.service.ReservationService;
 import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +96,14 @@ public class ReservationController {
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "예약 취소가 완료되었습니다.", canceledReservation.getId());
 
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/reservation/available-hours")
+    public ResponseEntity<List<String>> getAvailableHours(
+            @RequestParam Long gameId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate resDate) {
+        List<String> reservedHours = reservationService.findAvailableHours(gameId, resDate);
+        return ResponseEntity.ok(reservedHours);
     }
 
     /* 특정 일 특정 시간대 에 대한 예약 여부 조회 */

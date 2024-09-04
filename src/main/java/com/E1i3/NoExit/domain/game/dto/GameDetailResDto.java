@@ -27,8 +27,12 @@ public class GameDetailResDto {
     private String imagePath; // 사진 경로
     private String storeName; // 상점 이름
 
+    private Double latitude;  // 가게의 위도
+    private Double longitude; // 가게의 경도
+
 
     public static GameDetailResDto fromEntity(Game game) {
+        Store store = game.getStore();
         return GameDetailResDto.builder()
                 .id(game.getId())
                 .gameName(game.getGameName())
@@ -40,6 +44,8 @@ public class GameDetailResDto {
                 .ageLimit(game.getAgeLimit())
                 .imagePath(game.getImagePath())
                 .storeName(game.getStore().getStoreName())
+                .latitude(store.getLatitude())  // 위도 정보 추가
+                .longitude(store.getLongitude()) // 경도 정보 추가
                 .build();
     }
 }

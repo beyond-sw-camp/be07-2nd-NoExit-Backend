@@ -36,18 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class NotificationService {
-	private final MemberService memberService;
-	private final OwnerService ownerService;
 	private final NotificationRepository notificationRepository;
-	private final DataSource dataSource;
 
 	@Autowired
-	public NotificationService(MemberService memberService, OwnerService ownerService,
-		NotificationRepository notificationRepository, MemberRepository memberRepository, DataSource dataSource) {
-		this.memberService = memberService;
-		this.ownerService = ownerService;
+	public NotificationService(NotificationRepository notificationRepository) {
 		this.notificationRepository = notificationRepository;
-		this.dataSource = dataSource;
 	}
 
 	public List<NotificationResDto> getNotificationsByEmail() {

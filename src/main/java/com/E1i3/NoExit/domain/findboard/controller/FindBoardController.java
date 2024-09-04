@@ -62,7 +62,6 @@ public class FindBoardController {
     @Operation(summary= "[일반 사용자] 번개 글 수정 API")
     @PutMapping("/update/{id}")
     public ResponseEntity<CommonResDto> updateFindBoard(@PathVariable Long id, @RequestBody FindBoardUpdateReqDto findBoardUpdateReqDto) {
-        System.out.println(findBoardUpdateReqDto.getSelectedStoreName());
         FindBoardResDto updatedFindBoardResDto = findBoardService.update(id, findBoardUpdateReqDto);
         CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "업데이트 성공", updatedFindBoardResDto);
         return new ResponseEntity<>(commonResDto, HttpStatus.OK);

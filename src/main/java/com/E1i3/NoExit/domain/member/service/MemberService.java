@@ -100,13 +100,20 @@ public class MemberService {
 
 	// 회원 정보 수정
 	@Transactional
-	public Member memberUpdate(MemberUpdateDto memberUpdateDto) {
+	public Member memberUpdate(MemberUpdateDto memberUpdateDto, MultipartFile imgFile) {
 		// 이메일과 비밀번호는 바뀌지않음
 		String email = getEmailFromToken();
 		Member member = memberRepository.findByEmail(email)
 			.orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이메일입니다."));
 		String encodedPassword = passwordEncoder.encode(member.getPassword());
-		return member.updateMember(memberUpdateDto, email, encodedPassword);
+
+		String imageUrl;
+		if (imgFile != null && !imgFile.isEmpty()) {
+			imageUrl = s3Service.uploadFile(imgFile, "member");
+		} else {
+			imageUrl = member.getProfileImage();
+		}
+		return member.updateMember(memberUpdateDto, email, encodedPassword, imageUrl);
 	}
 
 	// 로그인

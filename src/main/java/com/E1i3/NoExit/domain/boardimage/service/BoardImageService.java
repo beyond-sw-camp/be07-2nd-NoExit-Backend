@@ -46,7 +46,7 @@ public class BoardImageService {
         board.getImgs().add(img);
         boardRepository.save(board);
         boardImageRepository.save(img);
-	}
+    }
 
 
     public void deleteImg(Long id) {

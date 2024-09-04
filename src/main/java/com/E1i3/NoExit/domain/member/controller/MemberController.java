@@ -57,7 +57,6 @@ public class MemberController {
 
 	private final MemberService memberService;
 	private final JwtTokenProvider jwtTokenProvider;
-	private final NotificationService notificationService;
 	private final RedisTemplate<String, Object> redisTemplate;
 
 	@Value("${jwt.secretKeyRt}")
@@ -65,10 +64,9 @@ public class MemberController {
 
 	@Autowired
 	public MemberController(MemberService memberService, JwtTokenProvider jwtTokenProvider,
-		NotificationService notificationService, RedisTemplate<String, Object> redisTemplate) {
+		RedisTemplate<String, Object> redisTemplate) {
 		this.memberService = memberService;
 		this.jwtTokenProvider = jwtTokenProvider;
-		this.notificationService = notificationService;
 		this.redisTemplate = redisTemplate;
 	}
 
@@ -83,10 +81,19 @@ public class MemberController {
 	}
 
 	// 상세 내역 수정
-	@Operation(summary = "[일반 사용자] 사용자 정보 수정 API")
+	// @Operation(summary = "[일반 사용자] 사용자 정보 수정 API")
+	// @PostMapping("/member/update")
+	// public ResponseEntity<CommonResDto> updateMember(@RequestBody MemberUpdateDto dto) {
+	// 	CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "회원정보 수정", memberService.memberUpdate(dto).getId());
+	// 	return new ResponseEntity<>(commonResDto, HttpStatus.OK);
+	// }
+
+	@Operation(summary = "[일반 사용자] 회원가입 API")
 	@PostMapping("/member/update")
-	public ResponseEntity<CommonResDto> updateMember(@RequestBody MemberUpdateDto dto) {
-		CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "회원정보 수정", memberService.memberUpdate(dto).getId());
+	public ResponseEntity<CommonResDto> memberCreatePost(@RequestPart(value = "data") MemberUpdateDto dto,
+		@RequestPart(value = "file", required = false) MultipartFile imgFile) {
+		CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "회원가입 성공",
+			memberService.memberUpdate(dto, imgFile).getId());
 		return new ResponseEntity<>(commonResDto, HttpStatus.OK);
 	}
 

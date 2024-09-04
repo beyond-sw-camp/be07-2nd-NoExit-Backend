@@ -42,7 +42,7 @@ public class ChatService {
     }
 
     // 메시지를 처리하고 저장하는 기능
-    public void handleMessage(String roomId, String senderEmail, Object content) {
+    public void handleMessage(String roomId, String senderEmail, String senderName, String senderProfileImage, Object content) {
         //String senderEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
 
@@ -59,6 +59,8 @@ public class ChatService {
 
         ChatMessageEntity chatMessageEntity = ChatMessageEntity.builder()
                 .sender(senderEmail)
+                .senderName(senderName)
+                .senderProfileImage(senderProfileImage)
                 .content(contentAsString)
                 .chatRoom(chatRoom)
                 .timestamp(System.currentTimeMillis())

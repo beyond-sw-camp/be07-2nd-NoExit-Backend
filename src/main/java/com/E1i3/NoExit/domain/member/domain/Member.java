@@ -80,8 +80,8 @@ public class Member extends BaseTimeEntity{
 	@OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
 	private List<Reservation> reservations;
 
-	@OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
-	private List<Board> boards;
+//	@OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
+//	private List<Board> boards;
 
 	// Member객체에 Findboard 객체 추가. : 김민성
 	@OneToMany(mappedBy = "member", cascade = CascadeType.PERSIST)
@@ -101,13 +101,14 @@ public class Member extends BaseTimeEntity{
 	// @JsonBackReference // Member는 역참조로 직렬화 제외
 	// private List<ChatRoom> chatRooms = new ArrayList<>();
 
-	public Member updateMember(MemberUpdateDto dto, String email, String encodedPassword) {
+	public Member updateMember(MemberUpdateDto dto, String email, String encodedPassword, String imgUrl) {
 		this.username = dto.getUsername();
 		this.email = email;
 		this.password =  encodedPassword;
 		this.age = dto.getAge();
 		this.phone_number = dto.getPhone_number();
 		this.nickname = dto.getNickname();
+		this.profileImage = imgUrl;
 		return this;
 	}
 

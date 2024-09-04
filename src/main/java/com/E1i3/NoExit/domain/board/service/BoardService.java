@@ -6,7 +6,6 @@ import com.E1i3.NoExit.domain.board.dto.*;
 import com.E1i3.NoExit.domain.board.repository.BoardRepository;
 import com.E1i3.NoExit.domain.boardimage.domain.BoardImage;
 import com.E1i3.NoExit.domain.boardimage.repository.BoardImageRepository;
-import com.E1i3.NoExit.domain.comment.domain.Comment;
 import com.E1i3.NoExit.domain.common.domain.DelYN;
 import com.E1i3.NoExit.domain.common.service.S3Service;
 import com.E1i3.NoExit.domain.member.domain.Member;
@@ -55,16 +54,16 @@ public class BoardService {
     @Autowired
 
     public BoardService(BoardRepository boardRepository, MemberRepository memberRepository,
-        NotificationService notificationService, S3Service s3Service, BoardImageRepository boardImageRepository,
-        SseController sseController, NotificationRepository notificationRepository) {
+                        NotificationService notificationService, S3Service s3Service, BoardImageRepository boardImageRepository,
+                        SseController sseController, NotificationRepository notificationRepository) {
         this.boardRepository = boardRepository;
         this.memberRepository = memberRepository;
         this.notificationService = notificationService;
         this.s3Service = s3Service;
         this.boardImageRepository = boardImageRepository;
         this.sseController = sseController;
-		this.notificationRepository = notificationRepository;
-	}
+        this.notificationRepository = notificationRepository;
+    }
 
     @Autowired
     @Qualifier("4")
@@ -150,7 +149,7 @@ public class BoardService {
 
     public BoardDetailResDto boardDetail(Long id) { // 특정 게시글 조회
         Board board = boardRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
         if (board.getDelYN().equals(DelYN.Y)) {
             throw new IllegalArgumentException("cannot find board");
         }
@@ -189,7 +188,7 @@ public class BoardService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Board board = boardRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
         //        boardRepository.delete(board);
         if (!board.getMember().getEmail().equals(email)) {
             throw new IllegalArgumentException("본인의 게시글만 삭제할 수 있습니다.");
@@ -202,22 +201,22 @@ public class BoardService {
 
     @Transactional
     public boolean boardUpdateLikes(Long id) {
-
         boolean value = false;
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이메일입니다."));
 
         Board board = boardRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
 
         String likesKey = BOARD_PREFIX + id + ":likes";
         String memberLikesKey = MEMBER_PREFIX + member.getId() + ":likes:" + id;
 
         Boolean isLiked = boardRedisTemplate.hasKey(memberLikesKey);
+        System.out.println(isLiked);
 
-        if (isLiked != null && isLiked) {
+        if (isLiked != null && isLiked) { // 이미 좋아요 누름
             boardRedisTemplate.delete(memberLikesKey);
             boardRedisTemplate.opsForSet().remove(likesKey, member.getId());
             board.updateLikes(false);
@@ -225,23 +224,26 @@ public class BoardService {
             boardRedisTemplate.opsForValue().set(memberLikesKey, true);
             boardRedisTemplate.opsForSet().add(likesKey, member.getId());
             board.updateLikes(true);
+            value = true;
             String receiver_email = board.getMember().getEmail();
             if(!receiver_email.equals(email)) {
                 NotificationResDto notificationResDto = NotificationResDto.builder()
-                    .notification_id(board.getId())
-                    .email(receiver_email)
-                    .sender_email(email)
-                    .type(NotificationType.BOARD_LIKE)
-                    .message(member.getNickname() + "님이 내 게시글을 추천합니다.").build();
+                        .notification_id(board.getId())
+                        .email(receiver_email)
+                        .sender_email(email)
+                        .type(NotificationType.BOARD_LIKE)
+                        .message(member.getNickname() + "님이 내 게시글을 추천합니다.").build();
                 sseController.publishMessage(notificationResDto, receiver_email);
             }
         }
 
-        boardRepository.save(board);
 
+        boardRepository.save(board);
         return value;
 
     }
+
+
 
     @Transactional
     public boolean boardUpdateDislikes(Long id) {
@@ -249,10 +251,10 @@ public class BoardService {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Member member = memberRepository.findByEmail(email)
-            .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 이메일입니다."));
 
         Board board = boardRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + id));
 
         String dislikesKey = BOARD_PREFIX + id + ":dislikes";
         String memberDislikesKey = MEMBER_PREFIX + member.getId() + ":dislikes:" + id;

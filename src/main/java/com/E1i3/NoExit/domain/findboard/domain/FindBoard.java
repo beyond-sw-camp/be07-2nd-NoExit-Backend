@@ -108,7 +108,6 @@ public class FindBoard extends BaseTimeEntity {
         this.contents = dto.getContents();
         this.expirationTime = dto.getExpirationDate();
         this.totalCapacity = dto.getTotalCapacity();
-        this.selectedStoreName = dto.getSelectedStoreName(); //여기 없어서 매장 이름 수정 안됐엇음.
         this.getUpdateTime(); // 데이터 값 이상한지 확인하기.
     }
 }

@@ -7,7 +7,6 @@ build/
 .run
 .xml
 *.run
-*.yml
 ### STS ###
 .apt_generated
 .classpath

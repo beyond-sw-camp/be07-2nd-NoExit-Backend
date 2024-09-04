@@ -81,7 +81,7 @@ public class BoardController {
             @PathVariable Long id,
             @RequestPart(value = "data", required = false) BoardUpdateReqDto boardUpdateReqDto,
             @RequestPart(value = "file", required = false) List<MultipartFile> imgFiles
-            ) {
+    ) {
         try {
             boardService.boardUpdate(id, boardUpdateReqDto, imgFiles);
             CommonResDto commonResDto = new CommonResDto(HttpStatus.OK, "board is successfully updated", null);

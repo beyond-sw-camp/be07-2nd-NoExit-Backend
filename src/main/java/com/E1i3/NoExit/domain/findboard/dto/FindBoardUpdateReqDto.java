@@ -16,7 +16,6 @@ public class FindBoardUpdateReqDto {
     private String selectedStoreName;
 
     public FindBoardUpdateReqDto(String title, String contents, LocalDateTime expirationDate, int totalCapacity, String selectedStoreName) {
-        System.out.println(selectedStoreName);
         this.title = title;
         this.contents = contents;
         this.expirationDate = expirationDate;
